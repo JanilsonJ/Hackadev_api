@@ -1,5 +1,5 @@
 const accountSid = 'AC10d24d55bd707473faf37459fda8904b'; 
-const authToken = 'b4a458e3f1e45753cc19413656792dc3'; 
+const authToken = '4d7ec26f9cc5e94451a143a2b9d0a0cb'; 
 const client = require('twilio')(accountSid, authToken); 
 
 function sendPurchaseMessage(user, order) {
