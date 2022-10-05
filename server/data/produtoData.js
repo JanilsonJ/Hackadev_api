@@ -18,7 +18,7 @@ const getProdutoById = async (id) => {
     if (await productExists(id)) 
         return `Produto(${id}) não encontrado.` 
       
-    return db.one(`SELECT * FROM product WHERE id = ${id} `);
+    return await db.one(`SELECT * FROM product WHERE id = ${id} `);
 }
 
 const getProdutoBySku = async (sku) => {
@@ -37,7 +37,12 @@ const getProductSizesByID = async (id) => {
 
 const insertProduto = (data) => {
     const { name, category, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
-    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8); `, [name, category, description, image1, image2, regular_price, actual_price, porcent_discount]);
+    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id; `, [name, category, description, image1, image2, regular_price, actual_price, porcent_discount]);
+}
+
+const insertProdutoAttributes = (data) => {
+    const { sku, product_id, size, available, stock } = data;
+    return db.query(`INSERT INTO product_attributes VALUES ('${sku}', ${product_id}, '${size}', '${available}', ${stock});`);
 }
 
 const updateProdutoById = async (id, data) => {
@@ -78,6 +83,7 @@ const produtoData = {
     getProdutoBySku,
     getProductSizesByID,
     insertProduto,
+    insertProdutoAttributes,
     updateProdutoById,
     deleteProdutoById
 }

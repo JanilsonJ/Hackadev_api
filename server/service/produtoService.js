@@ -10,8 +10,8 @@ const getProdutosFiltered = (filter) => {
     return produtoData.getProdutosFiltered(filter);
 }
 
-const getProdutoById = (id) => {
-    return produtoData.getProdutoById(id);
+const getProdutoById = async (id) => {
+    return await produtoData.getProdutoById(id);
 }
 
 const getProdutoBySku = (sku) => {
@@ -24,6 +24,28 @@ const getProductSizesByID = (id) => {
 
 const insertProduto = (data) => {
     return produtoData.insertProduto(data);
+}
+
+const insertProdutoAttributes = (data) => {
+    const sizes = ['PP', 'P', 'M', 'G', 'GG']
+
+    try {
+        sizes.forEach(size => {
+            const attributes = {
+                sku: data.product_id + size, 
+                product_id: data.product_id, 
+                size: size, 
+                available: (data[size] > 0), 
+                stock: data[size]
+            }
+    
+            produtoData.insertProdutoAttributes(attributes)
+        })
+        
+        return true
+    } catch (error) {
+        return error;
+    }
 }
 
 const updateProdutoById = (id, data) => {
@@ -41,6 +63,7 @@ const produtoService = {
     getProdutoBySku,
     getProductSizesByID,
     insertProduto,
+    insertProdutoAttributes,
     updateProdutoById,
     deleteProdutoById
 };

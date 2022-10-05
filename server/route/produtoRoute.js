@@ -1,11 +1,10 @@
 const express = require("express");
-const { sendPurchaseMessage } = require("../../Twillio/index.js");
 
 const produtoService = require('../service/produtoService.js');
 
 const produtos = express.Router();
 
-produtos.get('/produtos', async (req, res) => {
+produtos.get('/products', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -13,7 +12,7 @@ produtos.get('/produtos', async (req, res) => {
     res.send(produto)
 })
 
-produtos.get('/produtos/:filter', async (req, res) => {
+produtos.get('/products/:filter', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -23,7 +22,7 @@ produtos.get('/produtos/:filter', async (req, res) => {
     res.send(produto)
 })
 
-produtos.get('/produto/:id', async (req, res) => {
+produtos.get('/products/product/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -33,7 +32,7 @@ produtos.get('/produto/:id', async (req, res) => {
     return res.status(200).send(produto);
 })
 
-produtos.get('/produto/sizes/:id', async (req, res) => {
+produtos.get('/products/sizes/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -43,7 +42,7 @@ produtos.get('/produto/sizes/:id', async (req, res) => {
     return res.status(200).send(produto)    
 })
 
-produtos.get('/produto/sku/:sku', async (req, res) => {
+produtos.get('/products/sku/:sku', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -53,17 +52,27 @@ produtos.get('/produto/sku/:sku', async (req, res) => {
     return res.status(200).send(produto)    
 })
 
-produtos.post('/produto', async (req, res) => {
+produtos.post('/products', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
     const data = req.body
 
-    await produtoService.insertProduto(data);
-    return res.status(200).send(`Produto ${data.name} inserido com sucesso!`)
+    const idOfInsert = await produtoService.insertProduto(data);
+    return res.status(200).send(idOfInsert)
 })
 
-produtos.put('/produto/:id', async (req, res) => {
+produtos.post('/products_attributes', async (req, res) => {
+    //Compartilhar informações entre servidores diferentes
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
+
+    const data = req.body
+
+    const idOfInsert = await produtoService.insertProdutoAttributes(data);
+    return res.status(200).send(idOfInsert)
+})
+
+produtos.put('/products/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -74,7 +83,7 @@ produtos.put('/produto/:id', async (req, res) => {
     return res.status(200).send(result)
 })
 
-produtos.delete('/produto/:id', async (req, res) => {
+produtos.delete('/products/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 

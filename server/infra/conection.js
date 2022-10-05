@@ -2,7 +2,7 @@ const pgPromise = require("pg-promise")();
 
 const db = pgPromise({
   connectionString:
-    "postgres://jbmumepuutjhzz:c0e3d1594e650b39d60ebb061daef5eccfb89e509448d83a5876e2891546463a@ec2-44-209-158-64.compute-1.amazonaws.com:5432/daf2s6qvegh99a",
+    "postgres://svublpnpfaxmyv:8ab4f63ffd37a065bfbf82bcf47c5faa648a3ddc1442ad2b5530f4e9d55b6781@ec2-54-82-205-3.compute-1.amazonaws.com:5432/d2gm1cqagnlccu",
   ssl: {
     rejectUnauthorized: false,
   }

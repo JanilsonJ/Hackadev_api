@@ -13,7 +13,7 @@ const getOrders = () => {
 const getOrderDetailsByUserId = (id) => {
     return db.query(`
         SELECT * FROM order_details
-        INNER JOIN order_items ON order_items.order_id = order_details.id
+        INNER JOIN order_items ON order_items.order_details_id = order_details.id
         INNER JOIN product_attributes ON product_attributes.sku = order_items.product_sku
         INNER JOIN product ON product.id = product_attributes.product_id
         WHERE customer_id = ${id} 

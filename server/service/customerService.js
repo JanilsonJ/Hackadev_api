@@ -8,12 +8,33 @@ const getCustomerById = (id) => {
     return customerData.getCustomerById(id);
 }
 
-const validateLogin = (data) => {
-    return customerData.validateLogin(data);
+const getAddressByCustomerID = (id) => {
+    return customerData.getAddressByCustomerID(id);
 }
 
-const insertCustomer = (data) => {
-    return customerData.insertCustomer(data);
+const getDeliveryAddressByCustomerID = (id) => {
+    return customerData.getDeliveryAddressByCustomerID(id);
+}
+
+const getCardByCustomerID = (id) => {
+    return customerData.getCardByCustomerID(id);
+}
+
+const getCustomerByCPF = (cpf) => {
+    return customerData.getCustomerByCPF(cpf);
+}
+
+const getCustomerByEmail = (email) => {
+    return customerData.getCustomerByEmail(email);
+}
+
+const validateLogin = async (data) => {
+    const customer = await customerData.validateLogin(data);
+    return customer !== null ? customer : false;
+}
+
+const insertCustomer = async (data) => {
+    return await customerData.insertCustomer(data);
 }
 
 const insertCustomerAddress = (data) => {
@@ -28,19 +49,46 @@ const updateCustomerById = (id, data) => {
     return customerData.updateCustomerById(id, data);
 }
 
+const updateDeliveryAddress = async (data) => {
+    
+    return await customerData.updateDeliveryAddress(data);
+}
+
+const updatePaymentCard = async (data) => {
+    
+    return await customerData.updatePaymentCard(data);
+}
+
 const deleteCustomerById = (id) => {
     return customerData.deleteCustomerById(id);
+}
+
+const deleteAddressById = async (id) => {
+    return await customerData.deleteAddressById(id);
+}
+
+const deleteCardById = async (id) => {
+    return await customerData.deleteCardById(id);
 }
 
 const customerService = {
     getCustomers,
     getCustomerById,
+    getAddressByCustomerID,
+    getDeliveryAddressByCustomerID,
+    getCardByCustomerID,
+    getCustomerByCPF,
+    getCustomerByEmail,
     validateLogin,
     insertCustomer,
     insertCustomerAddress,
     insertCustomerCard,
     updateCustomerById,
-    deleteCustomerById
+    updateDeliveryAddress,
+    updatePaymentCard,
+    deleteCustomerById,
+    deleteAddressById,
+    deleteCardById
 };
 
 module.exports = customerService;
