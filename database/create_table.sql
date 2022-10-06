@@ -6,12 +6,13 @@ DROP TABLE IF EXISTS customer_address;
 DROP TABLE IF EXISTS customer_card;
 DROP TABLE IF EXISTS customer;
 
-CREATE EXTENSION IF NOT EXISTS unaccent; -- Remove acentuação usando a função unaccent('Júnior')
+CREATE EXTENSION IF NOT EXISTS unaccent; -- Remove acentuação usando a função. Ex: unaccent('Júnior')
 
 CREATE TABLE product (
     id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL,
     category VARCHAR(15) NOT NULL,
+    departament VARCHAR(10),
     description VARCHAR(100),
     image1 TEXT, 
     image2 TEXT, 
@@ -92,11 +93,12 @@ CREATE TABLE order_items (
 
 INSERT INTO customer VALUES (DEFAULT, 'Janilson Júnior', '09876543210', TO_DATE('14/11/1998', 'DD/MM/YYYY'), 'janilsonej@hotmail.com', '1234', '+55 (62)98765-4321', true);
 INSERT INTO customer_address VALUES (DEFAULT, 1, 'Janilson Júnior', '98765432', 'Rua Tubal da Silva Brandão', '926', 'Bancários', 'João Pessoa', 'PB', true);
-INSERT INTO customer_card VALUES (DEFAULT, 1, '5203 1311 2113 6896', 'Janilson Júnior', TO_DATE('07/24', 'MM/YY'), '759', false);
+INSERT INTO customer_card VALUES (DEFAULT, 1, '5203 1311 2113 6896', 'Janilson Júnior', TO_DATE('07/24', 'MM/YY'), '759', true);
 
 INSERT INTO product VALUES (DEFAULT, 
                             'Blusa Verde Simples', 
                             'Blusa', 
+                            'Feminino',
                             NULL, 
                             'https://ima-ecommerce.netlify.app/assets/img/Products/Produto01_frente.webp',
                             'https://ima-ecommerce.netlify.app/assets/img/Products/Produto01_verso.webp',
@@ -109,7 +111,8 @@ INSERT INTO product_attributes VALUES ('1GG', 1, 'GG', false, 0);
 
 INSERT INTO product VALUES (DEFAULT, 
                             'Camisa botões na frente - Espaço', 
-                            'Camisa', 
+                            'Camisa',
+                            'Masculino',
                             NULL, 
                             'https://ima-ecommerce.netlify.app/assets/img/Products/Produto11_frente.webp',
                             'https://ima-ecommerce.netlify.app/assets/img/Products/Produto11_verso.webp',

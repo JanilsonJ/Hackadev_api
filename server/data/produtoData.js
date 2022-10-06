@@ -10,8 +10,11 @@ const getProdutos = () => {
     return db.query(`SELECT * FROM product`);
 }
 
-const getProdutosFiltered = (filter) => {
-    return db.query(`SELECT * FROM product WHERE unaccent(name) ILIKE '%${filter}%' OR unaccent(category) ILIKE '%${filter}%'`);
+const getProdutosFiltered = async (filter) => {
+    if (filter === 'Promoção')
+        return await db.query(`SELECT * FROM product WHERE porcent_discount > 0 ORDER BY porcent_discount DESC`);
+
+    return await db.query(`SELECT * FROM product WHERE unaccent(name) ILIKE '%${filter}%' OR unaccent(category) ILIKE '%${filter}%' OR departament = '${filter}'`);
 }
 
 const getProdutoById = async (id) => {
@@ -36,8 +39,8 @@ const getProductSizesByID = async (id) => {
 }
 
 const insertProduto = (data) => {
-    const { name, category, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
-    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING id; `, [name, category, description, image1, image2, regular_price, actual_price, porcent_discount]);
+    const { name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
+    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id; `, [name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount]);
 }
 
 const insertProdutoAttributes = (data) => {

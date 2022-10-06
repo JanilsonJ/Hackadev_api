@@ -18,7 +18,7 @@ const getCustomerById = async (id) => {
 }
 
 const getAddressByCustomerID = async (id) => { 
-    return db.query(`SELECT * FROM customer_address WHERE customer_id = ${id}`);
+    return db.query(`SELECT * FROM customer_address WHERE customer_id = ${id} ORDER BY (principal_address is true) DESC`);
 }
 
 const getDeliveryAddressByCustomerID = async (id) => { 
@@ -27,7 +27,7 @@ const getDeliveryAddressByCustomerID = async (id) => {
 
 const getCardByCustomerID = async (id) => {
 
-    return db.query(`SELECT * FROM customer_card WHERE customer_id = ${id}`);
+    return db.query(`SELECT * FROM customer_card WHERE customer_id = ${id} ORDER BY (payment_Card is true) DESC`);
 }
 
 const getCustomerByCPF = async (cpf) => { 
