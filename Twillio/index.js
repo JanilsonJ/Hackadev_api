@@ -8,13 +8,21 @@ Olá, *${user.name}*!
 
 O pagamento do seu pedido acabou de ser aprovado ✅. 
 
-Confira mais detalhes de seu pedidio: 
-📦 *Pedido:* Nº ${order.id}
-📌 *Local de entrega:* ${order.order_address}
-💵 *Valor:* R$${order.total_price}
-📅 *Data:* ${order.order_date}
+_*Confira mais detalhes de seu pedidio:*_
+    📦 *Pedido:* Nº ${order.id}
 
-Atenciosamente *IMPÉRIO DA MODA AMERICANA* 🦁.`
+    😄 *Destinatário:* ${order.addressee}
+
+    📌 *Local de entrega:* ${order.order_address}
+
+    💵 *Valor:* R$${order.total_price.toFixed(2)}
+
+    ❎ *Parcelas:* ${order.installments}
+
+    📅 *Data:* ${order.order_date.replaceAll("-", "/")}
+
+----------------------------------------
+Atenciosamente *IMPÉRIO DA MODA AMERICANA*.`
 
     client.messages 
     .create({ 

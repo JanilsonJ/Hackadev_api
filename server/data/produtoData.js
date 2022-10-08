@@ -7,14 +7,16 @@ const productExists = async (id) => {
 }
 
 const getProdutos = () => {
-    return db.query(`SELECT * FROM product`);
+    return db.query(`SELECT * FROM product ORDER BY (disable is false) DESC`);
 }
 
 const getProdutosFiltered = async (filter) => {
     if (filter === 'Promoção')
-        return await db.query(`SELECT * FROM product WHERE porcent_discount > 0 ORDER BY porcent_discount DESC`);
+        return await db.query(`SELECT * FROM product WHERE porcent_discount > 0 AND disable = false ORDER BY porcent_discount DESC`);
 
-    return await db.query(`SELECT * FROM product WHERE unaccent(name) ILIKE '%${filter}%' OR unaccent(category) ILIKE '%${filter}%' OR departament = '${filter}'`);
+    return await db.query(`SELECT * FROM product 
+        WHERE unaccent(name) ILIKE '%${filter}%' OR unaccent(category) ILIKE '%${filter}%' OR departament = '${filter}'
+        ORDER BY (disable is false) DESC`);
 }
 
 const getProdutoById = async (id) => {
@@ -40,7 +42,7 @@ const getProductSizesByID = async (id) => {
 
 const insertProduto = (data) => {
     const { name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
-    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id; `, [name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount]);
+    return db.query(`INSERT INTO product VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, false) RETURNING id; `, [name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount]);
 }
 
 const insertProdutoAttributes = (data) => {
@@ -48,16 +50,14 @@ const insertProdutoAttributes = (data) => {
     return db.query(`INSERT INTO product_attributes VALUES ('${sku}', ${product_id}, '${size}', '${available}', ${stock});`);
 }
 
-const updateProdutoById = async (id, data) => {
-    const { name, category, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
-    
-    if (await productExists(id))  
-      return `Produto (${name}) não encontrado.` 
-    
-    db.query(`
+const updateProdutoById = async (data) => {
+    const { id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount } = data;
+
+    return await db.query(`
         UPDATE product SET 
             name = '${name}',
             category = '${category}',
+            departament = '${departament}',
             description = '${description}',
             image1 = '${image1}',
             image2 = '${image2}',
@@ -66,17 +66,23 @@ const updateProdutoById = async (id, data) => {
             porcent_discount = '${porcent_discount}'
         WHERE id = ${id}`
     );
-
-    return `Produto(${id}) atualizado com sucesso!`
 }
 
-const deleteProdutoById = async (id) => {
-    if (await productExists(id))   
-      return `Produto(${id}) não encontrado.` 
+const updateProdutoAttributesById = async (data) => {
+    const { sku, available, stock } = data;
 
-    db.query(`DELETE FROM product WHERE id = ${id}`)
+    return await db.query(`
+        UPDATE product_attributes SET
+            available = '${available}',
+            stock = ${stock}
+        WHERE sku = '${sku}'`
+    );
+}
 
-    return `Produto(${id}) excluído com sucesso!`
+const disableOrEnableProductById = async (id, disable) => {
+    return await db.query(`
+       UPDATE product SET disable = ${!disable} WHERE id = ${id};
+    `);
 }
 
 const produtoData = {
@@ -88,7 +94,8 @@ const produtoData = {
     insertProduto,
     insertProdutoAttributes,
     updateProdutoById,
-    deleteProdutoById
+    updateProdutoAttributesById,
+    disableOrEnableProductById
 }
 
 module.exports = produtoData;

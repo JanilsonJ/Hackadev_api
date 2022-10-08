@@ -45,9 +45,9 @@ const getOrderItems = () => {
 }
 
 const insertOrderDetails = async (data) => {
-    const {id, customer_id, order_date, total_price, installments, order_address } = data;
+    const {id, customer_id, addressee, order_date, total_price, installments, order_address } = data;
 
-    return await db.query(`INSERT INTO order_details VALUES (${id}, ${Number(customer_id)}, TO_DATE('${order_date}', 'DD/MM/YY'), ${Number(total_price)}, ${Number(installments)}, '${order_address}');`);
+    return await db.query(`INSERT INTO order_details VALUES (${id}, ${Number(customer_id)}, '${addressee}', TO_DATE('${order_date}', 'DD/MM/YY'), ${Number(total_price)}, ${Number(installments)}, '${order_address}');`);
 }
 
 const insertOrderItems = async (data) => {

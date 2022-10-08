@@ -72,25 +72,46 @@ produtos.post('/products_attributes', async (req, res) => {
     return res.status(200).send(idOfInsert)
 })
 
-produtos.put('/products/:id', async (req, res) => {
+produtos.put('/product', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-    const { id } = req.params;
     const data = req.body
 
-    const result = await produtoService.updateProdutoById(id, data);
-    return res.status(200).send(result)
+    try {
+        const result = await produtoService.updateProdutoById(data);
+        return res.status(200).send(result)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
 })
 
-produtos.delete('/products/:id', async (req, res) => {
+produtos.put('/product_attributes', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-    const { id } = req.params;
+    const data = req.body
 
-    const result = await produtoService.deleteProdutoById(id);
-    return res.status(200).send(result)
+    try {
+        const result = await produtoService.updateProdutoAttributesById(data);
+        return res.status(200).send(result)
+    } catch (error) {
+        return res.status(400).send(error)
+    }
+})
+
+produtos.put('/disable_enable_product', async (req, res) => {
+    //Compartilhar informações entre servidores diferentes
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
+
+    const body = req.body;
+
+    try {
+        const result = await produtoService.disableOrEnableProductById(body);
+        return res.status(200).send(result)
+    } catch (error) {
+        console.log(error)
+    }
 })
     
 module.exports = produtos;

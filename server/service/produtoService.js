@@ -48,12 +48,36 @@ const insertProdutoAttributes = (data) => {
     }
 }
 
-const updateProdutoById = (id, data) => {
-    return produtoData.updateProdutoById(id, data);
+const updateProdutoById = (data) => {
+    return produtoData.updateProdutoById(data);
 }
 
-const deleteProdutoById = (id) => {
-    return produtoData.deleteProdutoById(id);
+const updateProdutoAttributesById = (data) => {
+    const sizes = ['PP', 'P', 'M', 'G', 'GG']
+
+    try {
+        sizes.forEach(size => {
+            const attributes = {
+                sku: data.product_id + size, 
+                product_id: data.product_id, 
+                size: size, 
+                available: (data[size] > 0), 
+                stock: data[size]
+            }
+
+            produtoData.updateProdutoAttributesById(attributes)
+        })
+        
+        return true
+    } catch (error) {
+        return error;
+    }
+}
+
+const disableOrEnableProductById = async (body) => {
+    const { id, disable } = body;
+    
+    return await produtoData.disableOrEnableProductById(id, disable);
 }
 
 const produtoService = {
@@ -65,7 +89,8 @@ const produtoService = {
     insertProduto,
     insertProdutoAttributes,
     updateProdutoById,
-    deleteProdutoById
+    updateProdutoAttributesById,
+    disableOrEnableProductById
 };
 
 module.exports = produtoService;
