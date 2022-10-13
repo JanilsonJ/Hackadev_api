@@ -1,15 +1,26 @@
 const accountSid = 'AC10d24d55bd707473faf37459fda8904b'; 
-const authToken = '4d7ec26f9cc5e94451a143a2b9d0a0cb'; 
+const authToken = 'c7d915bc1b57016e415330ded2d08e16'; 
 const client = require('twilio')(accountSid, authToken); 
 
-function sendPurchaseMessage(user, order) {
+function twoDigits (value) {
+    return value.toLocaleString('pt-BR', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+      })
+}
+
+function sendPurchaseMessage(user, order, orderId, order_date) {
+    const date = new Date(order_date.toString().slice('.'));
+
+    const monthNames = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
     const body = `
 Olá, *${user.name}*!
 
 O pagamento do seu pedido acabou de ser aprovado ✅. 
 
 _*Confira mais detalhes de seu pedidio:*_
-    📦 *Pedido:* Nº ${order.id}
+    📦 *Pedido:* Nº ${orderId}
 
     😄 *Destinatário:* ${order.addressee}
 
@@ -19,7 +30,7 @@ _*Confira mais detalhes de seu pedidio:*_
 
     ❎ *Parcelas:* ${order.installments}
 
-    📅 *Data:* ${order.order_date.replaceAll("-", "/")}
+    📅 *Data:* ${twoDigits(date.getDate())} de ${monthNames[date.getMonth()]} de ${date.getFullYear()} às ${twoDigits(date.getHours())}:${twoDigits(date.getMinutes())}:${twoDigits(date.getSeconds())}
 
 ----------------------------------------
 Atenciosamente *IMPÉRIO DA MODA AMERICANA*.`

@@ -1,77 +1,79 @@
 const produtoData = require("../data/produtoData.js");
 
-const getProdutos = () => {
-    return produtoData.getProdutos();
+function isEmpyt (obj) {
+    const objStringfy = JSON.stringify(obj)
+
+    return objStringfy === '[]' || objStringfy === 'null';
 }
 
-const getProdutosFiltered = (filter) => {
-    filter = filter?.charAt(0).toUpperCase() + filter?.slice(1);
+const getProdutos = async () => {
+    return await produtoData.getProdutos();
+}
 
-    return produtoData.getProdutosFiltered(filter);
+const getProdutosFiltered = async (filter) => {
+    const capitalizeFilter = filter?.charAt(0).toUpperCase() + filter?.slice(1);
+    
+    if (filter === 'Promoção')
+        return await produtoData.getDiscountProducts();
+        
+    if (filter === 'Feminino' || filter === 'Masculino')
+    return await produtoData.getGenderProducts(filter);
+        
+    return await produtoData.getProdutosFiltered(capitalizeFilter);
 }
 
 const getProdutoById = async (id) => {
-    return await produtoData.getProdutoById(id);
-}
-
-const getProdutoBySku = (sku) => {
-    return produtoData.getProdutoBySku(sku);
-}
-
-const getProductSizesByID = (id) => {
-    return produtoData.getProductSizesByID(id);
-}
-
-const insertProduto = (data) => {
-    return produtoData.insertProduto(data);
-}
-
-const insertProdutoAttributes = (data) => {
-    const sizes = ['PP', 'P', 'M', 'G', 'GG']
-
-    try {
-        sizes.forEach(size => {
-            const attributes = {
-                sku: data.product_id + size, 
-                product_id: data.product_id, 
-                size: size, 
-                available: (data[size] > 0), 
-                stock: data[size]
-            }
+    const product = await produtoData.getProdutoById(id);
     
-            produtoData.insertProdutoAttributes(attributes)
-        })
-        
-        return true
-    } catch (error) {
-        return error;
-    }
+    if (isEmpyt(product))
+        throw new Error(`Produto de id igual à ${id} não encontrado!`)
+
+    return product;
 }
 
-const updateProdutoById = (data) => {
-    return produtoData.updateProdutoById(data);
+const getProdutoBySku = async (sku) => {
+    const product = await produtoData.getProdutoBySku(sku);
+
+    if (isEmpyt(product))
+        throw new Error(`Produto com sku igual à '${sku}' não encontrado!`)
+
+    return product;
 }
 
-const updateProdutoAttributesById = (data) => {
-    const sizes = ['PP', 'P', 'M', 'G', 'GG']
+const getProductSizesByID = async (id) => {
+    const sizes = await produtoData.getProductSizesByID(id);
 
-    try {
-        sizes.forEach(size => {
-            const attributes = {
-                sku: data.product_id + size, 
-                product_id: data.product_id, 
-                size: size, 
-                available: (data[size] > 0), 
-                stock: data[size]
-            }
+    if (isEmpyt(sizes))
+        throw new Error(`Tamanhos para o produto de ${id} não encontrados!`)
 
-            produtoData.updateProdutoAttributesById(attributes)
-        })
-        
-        return true
-    } catch (error) {
-        return error;
-    }
+    return sizes;
+}
+
+const insertProduto = async (data) => {
+    const { name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, PP, P, M, G, GG } = data;
+
+    if (name === undefined || category === undefined || departament === undefined || 
+        isNaN(regular_price) || isNaN(actual_price) || isNaN(porcent_discount) ||
+        isNaN(PP) || isNaN(P) || isNaN(M) || isNaN(G) || isNaN(GG))
+        throw new Error(`Dados insuficientes para a adição do produto ou com erros!`)
+
+    const {id: idOfInsert} = await produtoData.insertProduto(name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount);
+
+    return await produtoData.insertProdutoAttributes(idOfInsert, P, PP, M, G, GG);
+}
+
+const updateProdutoById = async (data) => {
+    const { id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, disable, PP, P, M, G, GG } = data;
+
+    if (isNaN(id) || name === undefined || category === undefined || departament === undefined || 
+        isNaN(regular_price) || isNaN(actual_price) || isNaN(porcent_discount) || disable === undefined)
+        throw new Error(`Dados insuficientes para a atualizar o produto ou com erros!`)
+
+    await produtoData.updateProdutoById(id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, disable);
+
+    await produtoData.updateProdutosQuantityBySku(id, PP, P, M, G, GG);
+
+    return;
 }
 
 const disableOrEnableProductById = async (body) => {
@@ -87,9 +89,7 @@ const produtoService = {
     getProdutoBySku,
     getProductSizesByID,
     insertProduto,
-    insertProdutoAttributes,
     updateProdutoById,
-    updateProdutoAttributesById,
     disableOrEnableProductById
 };
 

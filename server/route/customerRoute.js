@@ -12,48 +12,7 @@ customers.get('/customer', async (req, res) => {
         const result = await customerService.getCustomers();
         res.send(result);
     } catch (e) {
-        res.status(422).send(e);
-    }
-})
-
-customers.get('/customer_address/:id', async (req, res) => {
-    //Compartilhar informações entre servidores diferentes
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-    
-    const { id } = req.params;
-
-    try {
-        const result = await customerService.getAddressByCustomerID(id);
-        res.send(result)
-    } catch (e) {
-        res.status(422).send(e);
-    }
-})
-
-customers.get('/customer_delivery_address/:id', async (req, res) => {
-    //Compartilhar informações entre servidores diferentes
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-
-    const { id } = req.params;
-    try {
-        const result = await customerService.getDeliveryAddressByCustomerID(id);
-        res.send(result)
-    } catch (e) {
-        res.status(422).send(e);
-    }
-})
-
-customers.get('/customer_cards/:id', async (req, res) => {
-    //Compartilhar informações entre servidores diferentes
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-
-    const { id } = req.params;
-
-    try {
-        const result = await customerService.getCardByCustomerID(id);
-        res.send(result)
-    } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
@@ -67,51 +26,64 @@ customers.get('/customer/:id', async (req, res) => {
     try {
         return res.status(200).send(result)  
     } catch (e) {
-        res.status(422).send(e);
-    }  
+        res.status(400).send(`${e.name}: ${e.message}`)
+    }
 })
 
-customers.get('/customer_cpf/:cpf', async (req, res) => {
+customers.get('/customer/address/:id', async (req, res) => {
+    //Compartilhar informações entre servidores diferentes
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
+    
+    const { id } = req.params;
+
+    try {
+        const result = await customerService.getAddressByCustomerID(id);
+        res.send(result)
+    } catch (e) {
+        res.status(400).send(`${e.name}: ${e.message}`)
+    }
+})
+
+customers.get('/customer/address/delivery/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-    const { cpf } = req.params;
-    const result = await customerService.getCustomerByCPF(cpf);
+    const { id } = req.params;
 
     try {
-        return res.status(200).send(result) 
+        const result = await customerService.getDeliveryAddressByCustomerID(id);
+        res.send(result)
     } catch (e) {
-        res.status(422).send(e);
-    }   
+        res.status(400).send(`${e.name}: ${e.message}`)
+    }
 })
 
-customers.get('/customer_email/:email', async (req, res) => {
+customers.get('/customer/card/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-    const { email } = req.params;
-    const result = await customerService.getCustomerByEmail(email);
+    const { id } = req.params;
 
     try {
-        return res.status(200).send(result)  
+        const result = await customerService.getCardByCustomerID(id);
+        res.send(result)
     } catch (e) {
-        res.status(422).send(e);
-    }  
+        res.status(400).send(`${e.name}: ${e.message}`)
+    }
 })
 
-customers.post('/customer_validate', async (req, res) => {
+customers.post('/customer/auth', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
     const data = req.body
 
-    const result = await customerService.validateLogin(data);
-
     try {
-        return res.status(200).send(result); 
+        const result = await customerService.authCustomer(data);
+        res.status(200).send(result); 
     } catch (e) {
-        res.status(422).send(e);
-    }  
+        res.status(406).send(`${e.name}: ${e.message}`);
+    }
 })
 
 customers.post('/customer', async (req, res) => {
@@ -121,14 +93,14 @@ customers.post('/customer', async (req, res) => {
     const data = req.body
 
     try {
-        await customerService.insertCustomer(data);
-        return res.status(200).send(true)
-    } catch (error) {
-        return res.status(400).send(false)
+        const customer = await customerService.insertCustomer(data);
+        return res.status(200).send(customer);
+    } catch (e) {
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.post('/customer_address', async (req, res) => {
+customers.post('/customer/address', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -136,13 +108,13 @@ customers.post('/customer_address', async (req, res) => {
 
     try {
         await customerService.insertCustomerAddress(data);
-        return res.status(200).send(`Endereço ${data.name} inserido com sucesso!`)
+        return res.status(201).send();
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.post('/customer_card', async (req, res) => {
+customers.post('/customer/card', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -150,28 +122,27 @@ customers.post('/customer_card', async (req, res) => {
 
     try {
         await customerService.insertCustomerCard(data);
-        return res.status(200).send(`Cliente ${data.name} inserido com sucesso!`)
+        return res.status(201).send();
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.put('/customer/:id', async (req, res) => {
+customers.put('/customer', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-    const { id } = req.params;
     const data = req.body
 
     try {
-        const result = await customerService.updateCustomerById(id, data);
-        return res.status(200).send(result)
+        await customerService.updateCustomerById(data);
+        return res.status(200)
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.put('/customer_delivery_address', async (req, res) => {
+customers.put('/customer/address/delivery', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -181,11 +152,11 @@ customers.put('/customer_delivery_address', async (req, res) => {
         await customerService.updateDeliveryAddress(data);
         return res.status(200).send(true);
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.put('/customer_payment_card', async (req, res) => {
+customers.put('/customer/card/payment', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -195,25 +166,11 @@ customers.put('/customer_payment_card', async (req, res) => {
         await customerService.updatePaymentCard(data);
         return res.status(200).send(true);
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.delete('/customer/:id', async (req, res) => {
-    //Compartilhar informações entre servidores diferentes
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-
-    const { id } = req.params;
-
-    try {
-        const result = await customerService.deleteCustomerById(id);
-        return res.status(200).send(result)
-    } catch (e) {
-        res.status(422).send(e);
-    }
-})
-
-customers.delete('/customer_address/:id', async (req, res) => {
+customers.delete('/customer/address/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -223,11 +180,11 @@ customers.delete('/customer_address/:id', async (req, res) => {
         const result = await customerService.deleteAddressById(id);
         return res.status(200).send(result)
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
 
-customers.delete('/customer_card/:id', async (req, res) => {
+customers.delete('/customer/card/:id', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 
 
@@ -237,7 +194,7 @@ customers.delete('/customer_card/:id', async (req, res) => {
         const result = await customerService.deleteCardById(id);
         return res.status(200).send(result)
     } catch (e) {
-        res.status(422).send(e);
+        res.status(400).send(`${e.name}: ${e.message}`)
     }
 })
     

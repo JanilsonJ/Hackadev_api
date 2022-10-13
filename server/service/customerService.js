@@ -1,7 +1,13 @@
 const customerData = require("../data/customerData.js");
 
-const getCustomers = () => {
-    return customerData.getCustomers();
+function isEmpyt (obj) {
+    const objStringfy = JSON.stringify(obj)
+
+    return objStringfy === '[]' || objStringfy === 'null';
+}
+
+const getCustomers = async () => {
+    return await customerData.getCustomers();
 }
 
 const getCustomerById = (id) => {
@@ -20,54 +26,96 @@ const getCardByCustomerID = (id) => {
     return customerData.getCardByCustomerID(id);
 }
 
-const getCustomerByCPF = (cpf) => {
-    return customerData.getCustomerByCPF(cpf);
-}
+const authCustomer = async (data) => {
+    const { email, password } = data
 
-const getCustomerByEmail = (email) => {
-    return customerData.getCustomerByEmail(email);
-}
+    if (email === undefined || password === undefined)
+        throw new Error('Dados insuficientes para validação do login');
 
-const validateLogin = async (data) => {
-    const customer = await customerData.validateLogin(data);
-    return customer !== null ? customer : false;
+    const customer = await customerData.authCustomer(email, password);
+
+    if (isEmpyt(customer))
+        throw new Error('Autenticação invalida!');
+
+    return customer;
 }
 
 const insertCustomer = async (data) => {
-    return await customerData.insertCustomer(data);
+    const { name, cpf, birth, email, password, tel, adm } = data;
+
+    if (name === undefined || cpf === undefined || birth === undefined || 
+        email === undefined || password === undefined || tel === undefined)
+        throw new Error('Dados insuficientes para a criação do usuário');
+
+    return await customerData.insertCustomer(name, cpf, birth, email, password, tel, adm);
 }
 
-const insertCustomerAddress = (data) => {
-    return customerData.insertCustomerAddress(data);
+const insertCustomerAddress = async (data) => {
+    const { customer_id, addressee, cep, address, complement, district, city, state, principal_address } = data;
+
+    if (customer_id === undefined || addressee === undefined || cep === undefined || 
+        address === undefined || complement === undefined || district === undefined || 
+        city === undefined || state === undefined || principal_address === undefined)
+        throw new Error('Dados insuficientes para a adição do endereço.');
+
+    if (principal_address)
+        customerData.setAllDeliveryAddressFalse(customer_id)
+
+    return customerData.insertCustomerAddress(customer_id, addressee, cep, address, complement, district, city, state, principal_address);
 }
 
-const insertCustomerCard = (data) => {
-    return customerData.insertCustomerCard(data);
+const insertCustomerCard = async (data) => {
+    const { customer_id, card_number, card_name, expiry, cvv, payment_card } = data;
+
+    if (customer_id === undefined || card_number === undefined || card_name === undefined || 
+        expiry === undefined || cvv === undefined || payment_card === undefined)
+        throw new Error('Dados insuficientes para a adição do cartão.');
+
+    if (payment_card)
+        customerData.setAllPaymentCardsFalse(customer_id)
+
+    return await customerData.insertCustomerCard(customer_id, card_number, card_name, expiry, cvv, payment_card);
 }
 
-const updateCustomerById = (id, data) => {
-    return customerData.updateCustomerById(id, data);
+const updateCustomerById = (data) => {
+    const { name, cpf, birth, email, password, tel, adm } = data;
+
+    if (name === undefined || cpf === undefined || birth === undefined || email === undefined || 
+        password === undefined || tel === undefined || adm === undefined)
+        throw new Error('Dados insuficientes para atualizar informações do usuário.');
+
+    return customerData.updateCustomerById(name, cpf, birth, email, password, tel, adm);
 }
 
 const updateDeliveryAddress = async (data) => {
-    
-    return await customerData.updateDeliveryAddress(data);
+    const { address_id, customer_id } = data; 
+
+    if (address_id === undefined || customer_id === undefined)
+        throw new Error('Dados insuficientes para atualizar endereço de entrega.');
+
+    return await customerData.updateDeliveryAddress(address_id, customer_id);
 }
 
 const updatePaymentCard = async (data) => {
-    
-    return await customerData.updatePaymentCard(data);
-}
+    const { card_id, customer_id } = data; 
 
-const deleteCustomerById = (id) => {
-    return customerData.deleteCustomerById(id);
+    if (card_id === undefined || customer_id === undefined)
+        throw new Error('Dados insuficientes para atualizar cartão para pagamento.');
+
+    return await customerData.updatePaymentCard(card_id, customer_id);
 }
 
 const deleteAddressById = async (id) => {
+    if (id === undefined)
+        throw new Error('Id para exlusão do endereço não informado!');
+
     return await customerData.deleteAddressById(id);
 }
 
 const deleteCardById = async (id) => {
+    if (id === undefined)
+        throw new Error('Id para exlusão do cartão não informado!');
+
     return await customerData.deleteCardById(id);
 }
 
@@ -77,16 +125,13 @@ const customerService = {
     getAddressByCustomerID,
     getDeliveryAddressByCustomerID,
     getCardByCustomerID,
-    getCustomerByCPF,
-    getCustomerByEmail,
-    validateLogin,
+    authCustomer,
     insertCustomer,
     insertCustomerAddress,
     insertCustomerCard,
     updateCustomerById,
     updateDeliveryAddress,
     updatePaymentCard,
-    deleteCustomerById,
     deleteAddressById,
     deleteCardById
 };
