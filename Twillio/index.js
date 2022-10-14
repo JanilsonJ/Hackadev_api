@@ -1,5 +1,5 @@
 const accountSid = 'AC10d24d55bd707473faf37459fda8904b'; 
-const authToken = 'c7d915bc1b57016e415330ded2d08e16'; 
+const authToken = 'f8b5850c03a26ef6ab5598ec0087b265'; 
 const client = require('twilio')(accountSid, authToken); 
 
 function twoDigits (value) {
