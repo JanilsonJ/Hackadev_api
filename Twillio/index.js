@@ -35,14 +35,18 @@ _*Confira mais detalhes de seu pedidio:*_
 ----------------------------------------
 Atenciosamente *IMPÉRIO DA MODA AMERICANA*.`
 
-    client.messages 
-    .create({ 
-        body: body, 
-        from: 'whatsapp:+14155238886',       
-        to: 'whatsapp:+556281068866' 
-    }) 
-    .then(message => console.log(message.sid)) 
-    .done();
+    try {
+        client.messages 
+        .create({ 
+            body: body, 
+            from: 'whatsapp:+14155238886',       
+            to: 'whatsapp:+556281068866' 
+        }) 
+        .then(message => console.log(message.sid)) 
+        .done();
+    } catch (error) {
+        console.log(`Erro ao tentar enviar a notificação pelo framework da Twilio. Error: ${error}`)
+    }
 }
 
 module.exports = { sendPurchaseMessage };
