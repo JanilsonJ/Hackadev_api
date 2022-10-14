@@ -10,9 +10,9 @@ customers.get('/customer', async (req, res) => {
 
     try {
         const result = await customerService.getCustomers();
-        res.send(result);
+        res.status(200).send(result);
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -26,7 +26,7 @@ customers.get('/customer/:id', async (req, res) => {
     try {
         return res.status(200).send(result)  
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -38,9 +38,9 @@ customers.get('/customer/address/:id', async (req, res) => {
 
     try {
         const result = await customerService.getAddressByCustomerID(id);
-        res.send(result)
+        res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -52,9 +52,9 @@ customers.get('/customer/address/delivery/:id', async (req, res) => {
 
     try {
         const result = await customerService.getDeliveryAddressByCustomerID(id);
-        res.send(result)
+        res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -66,9 +66,9 @@ customers.get('/customer/card/:id', async (req, res) => {
 
     try {
         const result = await customerService.getCardByCustomerID(id);
-        res.send(result)
+        res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -82,7 +82,7 @@ customers.post('/customer/auth', async (req, res) => {
         const result = await customerService.authCustomer(data);
         res.status(200).send(result); 
     } catch (e) {
-        res.status(406).send(`${e.name}: ${e.message}`);
+        res.status(406).send(e);
     }
 })
 
@@ -96,7 +96,7 @@ customers.post('/customer', async (req, res) => {
         const customer = await customerService.insertCustomer(data);
         return res.status(200).send(customer);
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -110,7 +110,7 @@ customers.post('/customer/address', async (req, res) => {
         await customerService.insertCustomerAddress(data);
         return res.status(201).send();
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -124,7 +124,7 @@ customers.post('/customer/card', async (req, res) => {
         await customerService.insertCustomerCard(data);
         return res.status(201).send();
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -136,9 +136,9 @@ customers.put('/customer', async (req, res) => {
 
     try {
         await customerService.updateCustomerById(data);
-        return res.status(200)
+        return res.status(200).send()
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -152,7 +152,7 @@ customers.put('/customer/address/delivery', async (req, res) => {
         await customerService.updateDeliveryAddress(data);
         return res.status(200).send(true);
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -166,7 +166,7 @@ customers.put('/customer/card/payment', async (req, res) => {
         await customerService.updatePaymentCard(data);
         return res.status(200).send(true);
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -180,7 +180,7 @@ customers.delete('/customer/address/:id', async (req, res) => {
         const result = await customerService.deleteAddressById(id);
         return res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -194,7 +194,7 @@ customers.delete('/customer/card/:id', async (req, res) => {
         const result = await customerService.deleteCardById(id);
         return res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
     

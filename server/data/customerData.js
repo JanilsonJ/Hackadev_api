@@ -25,6 +25,10 @@ const authCustomer = async (email, password) => {
     return await db.oneOrNone(`SELECT * FROM customer WHERE email = '${email}' AND password = '${password}'`);
 }
 
+const verifyIfCustomerDataAlreadyExitsts = async (variable, data) => {
+    return await db.oneOrNone(`SELECT ${variable} FROM customer WHERE ${variable} = '${data}';`)
+}
+
 const insertCustomer = (name, cpf, birth, email, password, tel) => {
     return db.query(`
         INSERT INTO customer VALUES (DEFAULT, '${name}', '${cpf}', TO_DATE('${birth}', 'YYYY/MM/DD'), '${email}', '${password}', '${tel}', false);
@@ -55,16 +59,15 @@ const setAllPaymentCardsFalse = async (customer_id) => {
     `);
 }
 
-const updateCustomerById = async (id, name, cpf, birth, email, password, tel, adm) => {
+const updateCustomerById = async (id, name, birth, email, password, tel, adm) => {
     return await db.query(`
         UPDATE customer SET 
             name = '${name}',
-            cpf = '${cpf}',
             birth = TO_DATE('${birth}', 'YYYY/MM/DD'),
             email = '${email}',
             password = '${password}',
             tel = '${tel}',
-            adm = '${adm}'
+            adm = ${adm}
         WHERE id = ${id}`
     );
 }
@@ -99,6 +102,7 @@ const customerData = {
     
     authCustomer,    
     
+    verifyIfCustomerDataAlreadyExitsts,
     insertCustomerAddress,
     getAddressByCustomerID,
     getDeliveryAddressByCustomerID,

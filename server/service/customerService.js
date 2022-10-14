@@ -46,6 +46,14 @@ const insertCustomer = async (data) => {
     if (name === undefined || cpf === undefined || birth === undefined || 
         email === undefined || password === undefined || tel === undefined)
         throw new Error('Dados insuficientes para a criação do usuário');
+    
+    const emailExists = await customerData.verifyIfCustomerDataAlreadyExitsts('email', email);
+    if (emailExists !== null)
+        throw 'Email já cadastrado no sistema!';
+    
+    const cpfExists = await customerData.verifyIfCustomerDataAlreadyExitsts('cpf', cpf);
+    if (cpfExists !== null)
+        throw 'CPF já cadastrado no sistema!';
 
     return await customerData.insertCustomer(name, cpf, birth, email, password, tel, adm);
 }
@@ -77,14 +85,19 @@ const insertCustomerCard = async (data) => {
     return await customerData.insertCustomerCard(customer_id, card_number, card_name, expiry, cvv, payment_card);
 }
 
-const updateCustomerById = (data) => {
-    const { name, cpf, birth, email, password, tel, adm } = data;
+const updateCustomerById = async (data) => {
+    const { id, name, cpf, birth, email,  password, tel, adm } = data;
 
     if (name === undefined || cpf === undefined || birth === undefined || email === undefined || 
         password === undefined || tel === undefined || adm === undefined)
         throw new Error('Dados insuficientes para atualizar informações do usuário.');
 
-    return customerData.updateCustomerById(name, cpf, birth, email, password, tel, adm);
+    const emailExists = await customerData.verifyIfCustomerDataAlreadyExitsts('email', email);
+    const { email: actualEmail } = await customerData.getCustomerById(id);
+    if (emailExists !== null && actualEmail !== email)
+        throw 'Email já cadastrado no sistema!';
+
+    return await customerData.updateCustomerById(id, name, birth, email, password, tel, adm);
 }
 
 const updateDeliveryAddress = async (data) => {

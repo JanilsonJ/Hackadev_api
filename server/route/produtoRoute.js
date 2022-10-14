@@ -10,9 +10,9 @@ produtos.get('/products', async (req, res) => {
 
     try {
         const produto = await produtoService.getProdutos();
-        res.send(produto)
+        res.status(200).send(produto)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -26,7 +26,7 @@ produtos.get('/products/:filter', async (req, res) => {
         const produto = await produtoService.getProdutosFiltered(filter);
         res.status(200).send(produto)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -40,7 +40,7 @@ produtos.get('/products/product/:id', async (req, res) => {
         const produto = await produtoService.getProdutoById(id);
         res.status(200).send(produto)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -54,7 +54,7 @@ produtos.get('/products/sizes/:id', async (req, res) => {
         const produto = await produtoService.getProductSizesByID(id);
         res.status(200).send(produto)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     } 
 })
 
@@ -68,7 +68,7 @@ produtos.get('/products/sku/:sku', async (req, res) => {
         const produto = await produtoService.getProdutoBySku(sku);
         res.status(200).send(produto)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -82,7 +82,7 @@ produtos.post('/products', async (req, res) => {
         const idOfInsert = await produtoService.insertProduto(data);
         return res.status(200).send(idOfInsert)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 

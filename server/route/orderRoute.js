@@ -12,7 +12,7 @@ orders.get('/order', async (req, res) => {
         const result = await orderService.getOrders();
         res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
 
@@ -24,9 +24,9 @@ orders.get('/order/:id', async (req, res) => {
     
     try{
         await orderService.getOrderById(id);
-        return res.status(200)
+        return res.status(200).send()
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }    
 })
 
@@ -40,7 +40,7 @@ orders.get('/orders/customer/:id', async (req, res) => {
         const result = await orderService.getOrderByUserId(id);
         return res.status(200).send(result)
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }    
 })
 
@@ -54,7 +54,7 @@ orders.post('/order', async (req, res) => {
         await orderService.insertOrder(data);
         res.status(200).send();
     } catch (e) {
-        res.status(400).send(`${e.name}: ${e.message}`)
+        res.status(400).send(e)
     }
 })
     
