@@ -6,11 +6,17 @@ function isEmpyt (obj) {
     return objStringfy === '[]' || objStringfy === 'null';
 }
 
-const getProdutos = async () => {
+exports.getProdutos = async () => {
     return await produtoData.getProdutos();
 }
 
-const getProdutosFiltered = async (filter) => {
+exports.getRelatedProducts = async (id) => {
+    const {category, departament} = await produtoData.getProdutoById(id);
+
+    return await produtoData.getRelatedProducts(category, departament, id);
+}
+
+exports.getProdutosFiltered = async (filter) => {
     const capitalizeFilter = filter?.charAt(0).toUpperCase() + filter?.slice(1);
     
     if (filter === 'Promoção')
@@ -22,7 +28,7 @@ const getProdutosFiltered = async (filter) => {
     return await produtoData.getProdutosFiltered(capitalizeFilter);
 }
 
-const getProdutoById = async (id) => {
+exports.getProdutoById = async (id) => {
     const product = await produtoData.getProdutoById(id);
     
     if (isEmpyt(product))
@@ -31,7 +37,7 @@ const getProdutoById = async (id) => {
     return product;
 }
 
-const getProdutoBySku = async (sku) => {
+exports.getProdutoBySku = async (sku) => {
     const product = await produtoData.getProdutoBySku(sku);
 
     if (isEmpyt(product))
@@ -40,7 +46,7 @@ const getProdutoBySku = async (sku) => {
     return product;
 }
 
-const getProductSizesByID = async (id) => {
+exports.getProductSizesByID = async (id) => {
     const sizes = await produtoData.getProductSizesByID(id);
 
     if (isEmpyt(sizes))
@@ -49,7 +55,7 @@ const getProductSizesByID = async (id) => {
     return sizes;
 }
 
-const insertProduto = async (data) => {
+exports.insertProduto = async (data) => {
     const { name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, PP, P, M, G, GG } = data;
 
     if (name === undefined || category === undefined || departament === undefined || 
@@ -62,7 +68,7 @@ const insertProduto = async (data) => {
     return await produtoData.insertProdutoAttributes(idOfInsert, P, PP, M, G, GG);
 }
 
-const updateProdutoById = async (data) => {
+exports.updateProdutoById = async (data) => {
     const { id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, disable, PP, P, M, G, GG } = data;
 
     if (isNaN(id) || name === undefined || category === undefined || departament === undefined || 
@@ -76,21 +82,8 @@ const updateProdutoById = async (data) => {
     return;
 }
 
-const disableOrEnableProductById = async (body) => {
+exports.disableOrEnableProductById = async (body) => {
     const { id, disable } = body;
     
     return await produtoData.disableOrEnableProductById(id, disable);
 }
-
-const produtoService = {
-    getProdutos,
-    getProdutosFiltered,
-    getProdutoById,
-    getProdutoBySku,
-    getProductSizesByID,
-    insertProduto,
-    updateProdutoById,
-    disableOrEnableProductById
-};
-
-module.exports = produtoService;

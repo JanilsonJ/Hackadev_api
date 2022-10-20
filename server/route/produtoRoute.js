@@ -16,6 +16,20 @@ produtos.get('/products', async (req, res) => {
     }
 })
 
+produtos.get('/products/related/:id', async (req, res) => {
+    //Compartilhar informações entre servidores diferentes
+    res.setHeader('Access-Control-Allow-Origin', '*'); 
+
+    try {
+        const { id } = req.params;
+
+        const produtos = await produtoService.getRelatedProducts(id);
+        res.status(200).send(produtos)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
 produtos.get('/products/:filter', async (req, res) => {
     //Compartilhar informações entre servidores diferentes
     res.setHeader('Access-Control-Allow-Origin', '*'); 

@@ -1,21 +1,29 @@
 const db = require("../infra/conection.js");
 
-const getProdutos = () => {
+exports.getProdutos = () => {
     return db.query(`SELECT * FROM product ORDER BY (disable is false) DESC, name ASC`);
 }
 
-const getDiscountProducts = async () => {
+exports.getRelatedProducts = (category, departament, id) => {
+    return db.query(`
+        SELECT * FROM product 
+        WHERE (departament = '${departament}' OR departament = 'Unissex') AND category = '${category}' AND id != ${id} AND disable = false
+        ORDER BY porcent_discount DESC, name ASC
+    `);
+}
+
+exports.getDiscountProducts = async () => {
     return await db.query(`
         SELECT * FROM product WHERE porcent_discount > 0 AND disable = false 
         ORDER BY porcent_discount DESC, name ASC`
     );
 }
 
-const getGenderProducts = async (filter) => {
+exports.getGenderProducts = async (filter) => {
     return await db.query(`SELECT * FROM product WHERE departament = '${filter}' OR departament = 'Unissex' ORDER BY (disable is false) DESC`);
 }
 
-const getProdutosFiltered = async (filter) => {
+exports.getProdutosFiltered = async (filter) => {
     return await db.query(`
         SELECT * FROM product 
         WHERE unaccent(name) ILIKE '%${filter}%' OR unaccent(category) ILIKE '%${filter}%' OR unaccent(departament) = '${filter}'
@@ -23,11 +31,11 @@ const getProdutosFiltered = async (filter) => {
     );
 }
 
-const getProdutoById = async (id) => {
+exports.getProdutoById = async (id) => {
     return await db.oneOrNone(`SELECT * FROM product WHERE id = ${id} `);
 }
 
-const getProdutoBySku = async (sku) => {
+exports.getProdutoBySku = async (sku) => {
     return await db.oneOrNone(`
         SELECT * FROM product 
         INNER JOIN product_attributes ON product_attributes.product_id = product.id 
@@ -35,11 +43,11 @@ const getProdutoBySku = async (sku) => {
     `);
 }
 
-const getProductSizesByID = async (id) => {
+exports.getProductSizesByID = async (id) => {
     return await db.query(`SELECT * FROM product_attributes WHERE product_id = ${id}`)
 }
 
-const insertProduto = async (name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount) => {
+exports.insertProduto = async (name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount) => {
     return await db.oneOrNone(`
         INSERT INTO product VALUES (DEFAULT, 
             '${name}', 
@@ -55,7 +63,7 @@ const insertProduto = async (name, category, departament, description, image1, i
         RETURNING id; `);
 }
 
-const insertProdutoAttributes = async (idOfIsert, P, PP, M, G, GG) => {
+exports.insertProdutoAttributes = async (idOfIsert, P, PP, M, G, GG) => {
     return await db.query(`
         INSERT INTO product_attributes VALUES ('${idOfIsert}PP', ${idOfIsert}, 'PP', ${PP > 0}, ${PP});
         INSERT INTO product_attributes VALUES ('${idOfIsert}P', ${idOfIsert}, 'P', ${P > 0}, ${P});
@@ -65,7 +73,7 @@ const insertProdutoAttributes = async (idOfIsert, P, PP, M, G, GG) => {
     `);
 }
 
-const updateProdutoById = async (id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, disable) => {
+exports.updateProdutoById = async (id, name, category, departament, description, image1, image2, regular_price, actual_price, porcent_discount, disable) => {
     return await db.query(`
         UPDATE product SET 
             name = '${name}',
@@ -82,7 +90,7 @@ const updateProdutoById = async (id, name, category, departament, description, i
     );
 }
 
-const updateProdutosQuantityBySku = async (id, PP, P, M, G, GG) => {
+exports.updateProdutosQuantityBySku = async (id, PP, P, M, G, GG) => {
     return await db.query(`
         UPDATE product_attributes SET available = ${PP > 0}, stock = ${PP} WHERE sku = '${id}PP';
         UPDATE product_attributes SET available = ${P > 0}, stock = ${P} WHERE sku = '${id}P';
@@ -93,25 +101,8 @@ const updateProdutosQuantityBySku = async (id, PP, P, M, G, GG) => {
     );
 }
 
-const disableOrEnableProductById = async (id, disable) => {
+exports.disableOrEnableProductById = async (id, disable) => {
     return await db.query(`
        UPDATE product SET disable = ${!disable} WHERE id = ${id};
     `);
 }
-
-const produtoData = {
-    getProdutos,
-    getProdutosFiltered,
-    getGenderProducts,
-    getDiscountProducts,
-    getProdutoById,
-    getProdutoBySku,
-    getProductSizesByID,
-    insertProduto,
-    insertProdutoAttributes,
-    updateProdutoById,
-    updateProdutosQuantityBySku,
-    disableOrEnableProductById
-}
-
-module.exports = produtoData;
