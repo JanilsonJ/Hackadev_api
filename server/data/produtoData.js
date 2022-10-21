@@ -4,11 +4,21 @@ exports.getProdutos = () => {
     return db.query(`SELECT * FROM product ORDER BY (disable is false) DESC, name ASC`);
 }
 
-exports.getRelatedProducts = (category, departament, id) => {
+exports.getRelatedProductsByDepartamentAndCategory = (category, departament, id) => {
     return db.query(`
         SELECT * FROM product 
         WHERE (departament = '${departament}' OR departament = 'Unissex') AND category = '${category}' AND id != ${id} AND disable = false
         ORDER BY porcent_discount DESC, name ASC
+        LIMIT 12
+    `);
+}
+
+exports.getRelatedProductsByCategory = (category, id) => {
+    return db.query(`
+        SELECT * FROM product 
+        WHERE category = '${category}' AND id != ${id} AND disable = false
+        ORDER BY porcent_discount DESC, actual_price ASC, name ASC
+        LIMIT 12
     `);
 }
 

@@ -13,7 +13,13 @@ exports.getProdutos = async () => {
 exports.getRelatedProducts = async (id) => {
     const {category, departament} = await produtoData.getProdutoById(id);
 
-    return await produtoData.getRelatedProducts(category, departament, id);
+    if (category === undefined || departament === undefined)
+        throw new Error('Não foi possível achar produtos relacionados')
+
+    if (departament === 'Unissex')
+        return await produtoData.getRelatedProductsByCategory(category, id);
+
+    return await produtoData.getRelatedProductsByDepartamentAndCategory(category, departament, id);
 }
 
 exports.getProdutosFiltered = async (filter) => {
